@@ -12,6 +12,7 @@ app.add_middleware(
     allow_headers=["*"],  # This allows all headers
 )
 
-@app.get("/")
-def read_root():
+@app.post("/api/receive")
+def read_root(graph_data: Dict[str, dict]):
+    print(graph_data)
     return {"Hello": "World"}
