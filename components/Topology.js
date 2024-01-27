@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 
 const Topology = ({ onOptionChange, onUserCountChange }) => {
-  const [selectedOption, setSelectedOption] = useState('Option 1');
+  const [selectedOption, setSelectedOption] = useState('Line');
   const [userCount, setUserCount] = useState('');
 
   const handleOptionChange = (e) => {
@@ -18,7 +18,7 @@ const Topology = ({ onOptionChange, onUserCountChange }) => {
   };
 
   return (
-    <div>
+    <div className='centered'>
       <label htmlFor="dropdown">Choose an option:</label>
       <select id="dropdown" value={selectedOption} onChange={handleOptionChange} >
         <option value="Line">Line</option>
@@ -37,7 +37,7 @@ const Topology = ({ onOptionChange, onUserCountChange }) => {
         style={{ width: '100px' }}
       />
       <p>
-        Selected option: {selectedOption}, Number of users: {userCount || 'N/A'}
+        Selected topology: {selectedOption}<br></br> Number of users: {userCount || 'N/A'}
       </p>
     </div>
   );

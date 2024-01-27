@@ -64,7 +64,7 @@ def graph_to_json(graph: UserGraph):
         }
     return json
 if __name__ == '__main__':
-    userData =     [
+    userData =[
         {"userNumber": 1, "ip": "141.151.661.013", "port": "2352"},
         {"userNumber": 2, "ip": "169.151.101.013", "port": "1512"},
         {"userNumber": 3, "ip": "", "port": ""},

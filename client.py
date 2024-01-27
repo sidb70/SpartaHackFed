@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
-
+graph = {}
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # This allows all origins
@@ -14,5 +14,11 @@ app.add_middleware(
 
 @app.post("/api/receive")
 def read_root(graph_data: Dict[str, dict]):
+    if not graph:
+        graph = graph_data
+    train()
     print(graph_data)
     return {"Hello": "World"}
+
+def train():
+    print("Training...")

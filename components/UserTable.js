@@ -47,7 +47,7 @@ const UserTable = ({ userCount }) => {
   };
 
   return (
-    <div>
+    <div className='centeredTable'>
       <table>
         <thead>
           <tr>
