@@ -1,8 +1,8 @@
 from typing import Tuple, Dict, List
-from fastapi import FastAPI, BackgroundTasks
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-
+from util.graph import create_graph, visualize_graph, UserGraph, Topology, UserNode
+import requests
 app = FastAPI()
 
 origins = [
@@ -25,6 +25,27 @@ def read_root():
 @app.post("/api/network_config")
 def get_network_config(user_data: List[dict]):
     # user_data will be a list of dictionaries containing userNumber, ip, and port
-    print(user_data)
-    return {"message": "Data received successfully"}
+    #print(user_data)
+    # Create a graph
+    graph = create_graph(user_data, topology=Topology.LINE)
+    
+    # convert graph to json
+    graph_json = graph_to_json(graph)
 
+    # send graph_json to all users ip:port
+    for user_number, user_node in graph.nodes.items():
+        requests.post(f"http://{user_node.ip}:{user_node.port}/api/receive", json=graph_json)
+    return graph_json
+
+
+
+def graph_to_json(graph: UserGraph):
+    json = {}
+    for user_number, user_node in graph.nodes.items():
+        json[user_number] = {
+            "ip": user_node.ip,
+            "port": user_node.port,
+            "edges": user_node.edges
+        }
+    return json
+    
