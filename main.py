@@ -21,3 +21,10 @@ app.add_middleware(
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
+@app.post("/api/network_config")
+def get_network_config(user_data: List[dict]):
+    # user_data will be a list of dictionaries containing userNumber, ip, and port
+    print(user_data)
+    return {"message": "Data received successfully"}
+

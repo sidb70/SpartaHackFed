@@ -1,5 +1,8 @@
 // components/UserTable.js
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const apiUrl = 'http://127.0.0.1:8000/api/network_config';
 
 const UserTable = ({ userCount }) => {
   const [tableData, setTableData] = useState([]);
@@ -23,15 +26,24 @@ const UserTable = ({ userCount }) => {
     );
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const userData = tableData.map(({ userNumber, ip, port }) => ({
       userNumber,
       ip,
       port,
     }));
-
-    const jsonData = JSON.stringify(userData);
-    console.log(jsonData); // You can store or send this JSON data to an API
+  
+    try {
+      const response = await axios.post(apiUrl, userData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      console.log('Response from server:', response.data);
+    } catch (error) {
+      console.error('Error submitting data:', error.message);
+    }
   };
 
   return (
