@@ -36,17 +36,11 @@ def create_graph(data, topology: Topology = Topology.LINE):
     print("USERS", len(data))
 
     # Adding edges in a sequential order
-    if topology == Topology.LINE:
-        for i in range(1, len(data)):
-            graph.add_edge(data[i-1]['userNumber'], data[i]['userNumber'], directed=False)
-        # if len(data) > 1:
-        #     graph.add_edge(data[-1]['userNumber'], data[0]['userNumber'], directed=False)
-        # else:
-        #     graph.add_edge(data[0]['userNumber'], data[0]['userNumber'], directed=True)
-    elif topology == Topology.RING:
+    if topology == Topology.RING:
         for i in range(1, len(data)):
             graph.add_edge(data[i-1]['userNumber'], data[i]['userNumber'], directed=True)
-        graph.add_edge( data[-1]['userNumber'],data[0]['userNumber'], directed=True)
+        graph.add_edge(data[-1]['userNumber'], data[0]['userNumber'], directed=True)
+    
     elif topology == Topology.MESH:
         # fully connected graph
         for i in range(len(data)):
@@ -71,7 +65,6 @@ if __name__ == '__main__':
         {"userNumber": 1, "ip": "141.151.661.013", "port": "2352"},
         {"userNumber": 2, "ip": "169.151.101.013", "port": "1512"},
         {"userNumber": 3, "ip": "", "port": ""},
-        {"userNumber": 4, "ip": "", "port": ""}
     ]
     user_graph = create_graph(userData, topology=Topology.RING
     )
