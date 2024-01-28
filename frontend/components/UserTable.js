@@ -61,16 +61,6 @@ const UserTable = ({ userCount }) => {
     }));
 
     try {
-    
-      // Clear the contents of the cells without deleting the rows
-      // setTableData((prevData) =>
-      //   prevData.map((row) => ({
-      //     ...row,
-      //     ip: '',
-      //     port: '',
-      //   }))
-      // );
-      
       // Make the API request
       const response = await axios.post(serverUrl, userData, {
         headers: {
