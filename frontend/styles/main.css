@@ -69,3 +69,13 @@ button:hover {
         padding: 10px;
     }
 }
+.button-container {
+    display: flex;
+    gap: 10px; /* Adjust the gap between buttons as needed */
+    margin-top: 50px; /* Adjust the top margin as needed */
+    max-width: 300px; /* Adjust the maximum width as needed */
+    justify-content: center;
+    margin: auto;
+    text-align: center;
+  }
+  
