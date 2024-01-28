@@ -20,17 +20,19 @@ function UserTable() {
     }
   };
 
+
   useEffect(() => {
     fetchUsers();
   }, []);
 
   const startTraining = async () => {
     try {
+
       const my_ip = '35.21.231.182';
       const serverUrl = `http://${my_ip}:8000`;
       const response = await axios.post(`${serverUrl}/api/network_config`);
       console.log(response.data); // [{userNumber: 1, ip: "35.21.231.182", port: 8001}]
-      setGraphData(response.data);
+      //setGraphData(response.data);
       setLoading(false);
     } catch (error) {
       setErrorMessage('An error occurred while fetching user data.');
@@ -63,10 +65,12 @@ function UserTable() {
               ))}
             </tbody>
           </table>
-          <button onClick={fetchUsers}>Refresh Users</button>
-          <button onClick={startTraining}>Start Training</button>
         </>
       )}
+      <div className="button-container">
+        <button onClick={fetchUsers}>Refresh Users</button>
+        <button onClick={startTraining}>Start Training</button>
+      </div>
     </div>
   );
 }

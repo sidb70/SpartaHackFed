@@ -21,9 +21,8 @@ ax.legend(['Train Loss', 'Validation Loss'])
         
 
 def get_loan_defaulter_data(node_hash: int):
-    # all_data = pd.read_csv('data/loan_data.csv')
-    all_data = pd.read_csv('data/mergeddf_sample.csv')
-    return all_data.sample(30000, random_state=node_hash)
+    all_data = pd.read_csv('data/loan_data.csv')
+    return all_data.sample(10000, random_state=node_hash)
 
 
 class LoanDefaulterModel(Model):
