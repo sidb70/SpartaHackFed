@@ -12,14 +12,14 @@ app.add_middleware(
     allow_headers=["*"],  # This allows all headers
 )
 
-@app.post("/api/receive")
+@app.post("/api/receive_graph")
 def read_root(graph_data: Dict[str, dict]):
     global graph
-    if not graph:
-        graph = graph_data
-    train()
+    graph = graph_data
     print(graph_data)
-    return {"Hello": "World"}
+    return {"Recieved": "Graph"}
 
-def train():
-    print("Training...")
+@app.post("/api/recieve_model")
+def recieve_model(model: dict):
+    print(model)
+    return {"Recieved": "Model"}
