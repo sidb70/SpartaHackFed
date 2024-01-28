@@ -94,7 +94,7 @@ class LoanDefaulterModel(Model):
         y_valid_tensor = torch.squeeze(torch.from_numpy(y_valid.to_numpy()).float())
 
         # train 1 epoch, in batches of 10
-        epochs = 1000
+        epochs = 20
         batch_size = 200
         for epoch in range(epochs):
             for i in range(0, len(X_train_tensor), batch_size):
