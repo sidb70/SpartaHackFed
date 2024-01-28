@@ -23,12 +23,11 @@ def read_root():
     return {"Hello": "World"}
 
 
-async def send_graph_async(user_number, user_node, graph_json, headers):
-    url = f"http://{user_node.ip}:{user_node.port}/api/receive_graph"
+async def send_request_async(url, data, headers):
     async with aiohttp.ClientSession() as session:
-        async with session.post(url, data=graph_json, headers=headers) as response:
+        async with session.post(url, data=data, headers=headers) as response:
             # Assuming you want to print the response status code
-            print(f"Response from {user_number}: {response.status}")
+            pass
 
 
 @app.post("/api/network_config")
@@ -55,7 +54,7 @@ async def get_network_config(user_data: List[dict]):
     tasks = []
 
     for user_number, user_node in graph.nodes.items():
-        tasks.append(send_graph_async(user_number, user_node, graph_json, headers))
+        tasks.append(send_request_async(f"http://{user_node.ip}:{user_node.port}/api/receive_graph", graph_json, headers))
 
     await asyncio.gather(*tasks)
 

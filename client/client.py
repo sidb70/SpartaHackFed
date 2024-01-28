@@ -1,12 +1,9 @@
 from typing import Tuple, Dict, List
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, UploadFile, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 import torch
 import requests
 from models.loan_defaulter import LoanDefaulterModel, get_loan_defaulter_data
-import json
-import time
-import asyncio
 import io
 
 # Get external IP address using a third-party service (e.g., ifconfig.me)
@@ -48,7 +45,7 @@ async def receive_graph(graph_data: dict):
 processing = False
 
 @app.post("/api/recieve_model")
-async def recieve_model(file:UploadFile=None):
+async def recieve_model(background_tasks: BackgroundTasks, file:UploadFile=None):
     global processing
     if processing:
         return {"Processing": "None"}
@@ -62,7 +59,6 @@ async def recieve_model(file:UploadFile=None):
         file_bytes = await file.read()
         file = io.BytesIO(file_bytes)
     
-
     print(type(file_bytes))
 
     node_hash = 1
@@ -70,10 +66,12 @@ async def recieve_model(file:UploadFile=None):
     new_model = model.train()
     torch.save(new_model, 'model.pth')
 
-    forward('model.pth')
+    background_tasks.add_task(forward, 'model.pth')
 
     processing = False
     return {"Recieved": "Model"}
+
+
 
 
 def forward(model_path:str):
@@ -90,12 +88,15 @@ def forward(model_path:str):
 
     file = open(model_path, 'rb')
 
+
+
     with open(model_path, "rb") as file:
         files = {"file": file}
 
         for edge in edges:
             edge_node = graph[edge]
             print(f"http://{edge_node['ip']}:{edge_node['port']}/api/recieve_model")
+
             requests.post(f"http://{edge_node['ip']}:{edge_node['port']}/api/recieve_model", files=files)
 
 # def aggregate_models(state_dict1, state_dict2) -> dict:
