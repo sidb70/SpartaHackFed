@@ -20,6 +20,8 @@ app.add_middleware(
     allow_headers=["*"],  # This allows all headers
 )
 
+requests.post(f"http://{external_ip}:8000/api/add_node", json={"ip": external_ip, "port": 8001})
+
 graph = {}
 
 @app.get('/')
