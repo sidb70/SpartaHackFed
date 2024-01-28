@@ -65,11 +65,12 @@ function UserTable() {
               ))}
             </tbody>
           </table>
-          <button onClick={fetchUsers}>Refresh Users</button>
-          <button onClick={startTraining}>Start Training</button>
+
         </>
 
       )}
+      <button onClick={fetchUsers}>Refresh Users</button>
+      <button onClick={startTraining}>Start Training</button>
     </div>
   );
 }
