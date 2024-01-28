@@ -2,7 +2,7 @@
 
 body {
     font-family: 'Orbitron-Regular', 'Helvetica', sans-serif;
-    background-color: #222020;
+    background-color: #f2e8df;
     color: #d89789;
     margin: 0;
     padding: 0;
@@ -16,7 +16,7 @@ body {
 
 h1 {
     font-family: 'Orbitron-Regular', 'Helvetica', sans-serif;
-    color: #ec5c3d;
+    color: #f27649;
     /* center the heading */
     text-align: center;
 }
@@ -29,7 +29,7 @@ label {
     font-family: 'Orbitron-Regular', 'Helvetica', sans-serif;
     display: block;
     margin-bottom: 10px;
-    color: #ec5c3d;
+    color: #f28749;
 }
 
 input {
@@ -39,7 +39,7 @@ input {
 }
 
 button {
-    background-color: #ec5c3d;
+    background-color: #f28749;
     color: #fff;
     padding: 10px 15px;
     border: none;
@@ -47,7 +47,7 @@ button {
 }
 
 button:hover {
-    background-color: #ec5c3d;
+    background-color: #f28749;
 }
 
 .results {
@@ -56,7 +56,7 @@ button:hover {
 
 h2 {
     font-family: 'Orbitron-Regular', 'Helvetica', sans-serif;
-    color: #ec5c3d;
+    color: #f28749;
     margin-bottom: 10px;
 }
 
@@ -72,7 +72,7 @@ li {
 
 strong {
     font-family: 'Orbitron-Regular', 'Helvetica', sans-serif;
-    color: #ec5c3d;
+    color: #f28749;
 }
 .userTable {
   margin-top: 0; /* Adjust as needed */
