@@ -19,7 +19,6 @@ ax.set_ylabel('Loss')
 
 def get_loan_defaulter_data(node_hash: int):
     all_data = pd.read_csv('data/loan_data.csv')
-
     return all_data.sample(10000, random_state=node_hash)
 
 

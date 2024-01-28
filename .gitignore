@@ -3,6 +3,8 @@ node_modules/
 *.pth
 node_modules
 
+model.pth
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

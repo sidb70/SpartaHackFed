@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import dotenv from 'dotenv'
 
 const UserTable = ({ userCount }) => {
   const [tableData, setTableData] = useState([]);

@@ -36,10 +36,6 @@ const Topology = ({ onOptionChange, onUserCountChange }) => {
   return (
     <div className='centered'>
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-        <div style={{ ...optionStyle, background: selectedOption === 'Line' ? '#f0f0f0' : 'transparent' }} onClick={() => handleOptionChange('Line')}>
-          <FaNetworkWired />
-          <span style={textStyle}>  Line</span> {/* Text description for Line */}
-        </div>
         <div style={{ ...optionStyle, background: selectedOption === 'Ring' ? '#f0f0f0' : 'transparent' }} onClick={() => handleOptionChange('Ring')}>
           <FaRing />
           <span style={textStyle}>  Ring</span> {/* Text description for Ring */}
