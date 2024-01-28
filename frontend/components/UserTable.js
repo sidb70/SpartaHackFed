@@ -50,7 +50,7 @@ const UserTable = ({ userCount }) => {
 
   const handleSubmit = async () => {
 
-    my_ip = requests.get('https://ifconfig.me/ip').text.strip()
+    const my_ip = (await axios.get('https://ifconfig.me/ip')).data.trim()
     const serverUrl = `http://${my_ip}:8000/api/network_config`;
 
     console.log('Submitting data:', tableData);
@@ -84,7 +84,6 @@ const UserTable = ({ userCount }) => {
     } finally {
       // Set the submission message to indicate the process has been initiated
       setSubmissionMessage('Decentralized learning process has been initiated. P2P network is now established.');
-
     }
   };
 
@@ -125,8 +124,8 @@ const UserTable = ({ userCount }) => {
           ))}
         </tbody>
       </table>
-      {submissionMessage && <p>{submissionMessage}</p>}
       <br />
+      {submissionMessage && <p>{submissionMessage}</p>}
       <br />
       <br />
       <button onClick={handleSubmit}>Submit</button>
