@@ -31,9 +31,9 @@ def get_loan_defaulter_data(node_hash: int):
 
 class LoanDefaulterModel(Model):
 
-    def __init__(self, data, pth_file, *args, **kwargs):
+    def __init__(self, data, pth_file_bytes, *args, **kwargs):
         self.data = data
-        self.pth_file = pth_file
+        self.pth_file_bytes = pth_file_bytes
         super().__init__(*args, **kwargs)
 
 
@@ -66,11 +66,9 @@ class LoanDefaulterModel(Model):
 
         y = mergeddf_sample['TARGET']
 
-
-        # if pth is provided, load weights from pth
-        if self.pth_file is not None:
-            print(type(self.pth_file))
-            model = torch.load(self.pth_file)
+        # if pth is provided, load weights from pth file bytes
+        if self.pth_file_bytes is not None:
+            model = torch.load(self.pth_file_bytes)
         else:
             model = torch.nn.Sequential(
                 torch.nn.Linear(X.shape[1], 100),

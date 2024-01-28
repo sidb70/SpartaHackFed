@@ -41,13 +41,25 @@ async def receive_graph(graph_data: dict):
         print("I am not the first node")
     return {"Recieved": "Graph"}
 
+
+
+processing = False
+
 @app.post("/api/recieve_model")
 async def recieve_model(file:UploadFile=None):
+    global processing
+    if processing:
+        return {"Processing": "None"}
+
+    processing = True
+
     print("Recieved model")
 
     file_bytes = None
     if (file):
         file_bytes = await file.read()
+
+    print(type(file_bytes))
 
     node_hash = 1
     model = LoanDefaulterModel(get_loan_defaulter_data(node_hash), file_bytes)
@@ -56,6 +68,7 @@ async def recieve_model(file:UploadFile=None):
 
     forward('model.pth')
 
+    processing = False
     return {"Recieved": "Model"}
 
 

@@ -40,7 +40,7 @@ def create_graph(data, topology: Topology = Topology.LINE):
         for i in range(1, len(data)):
             graph.add_edge(data[i-1]['userNumber'], data[i]['userNumber'], directed=False)
         if len(data) > 1:
-            graph.add_edge(data[0]['userNumber'], data[-1]['userNumber'], directed=False)
+            graph.add_edge(data[-1]['userNumber'], data[0]['userNumber'], directed=False)
         else:
             graph.add_edge(data[0]['userNumber'], data[0]['userNumber'], directed=True)
     elif topology == Topology.RING:
