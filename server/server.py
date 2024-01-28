@@ -36,6 +36,7 @@ def get_network_config(user_data: List[dict]):
     
     for user_number, user_node in graph.nodes.items():
         print(f"{user_number}, http://{user_node.ip}:{user_node.port}/api/receive_graph")
+
         requests.post(f"http://{user_node.ip}:{user_node.port}/api/receive_graph", 
                       data=graph_json, headers=headers)
 
