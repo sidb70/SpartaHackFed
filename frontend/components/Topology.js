@@ -1,12 +1,11 @@
-// components/Dropdown.js
 import React, { useState } from 'react';
+import { FaNetworkWired, FaRing, FaStar, FaProjectDiagram, FaLifeRing } from 'react-icons/fa';
 
 const Topology = ({ onOptionChange, onUserCountChange }) => {
   const [selectedOption, setSelectedOption] = useState('Line');
   const [userCount, setUserCount] = useState('');
 
-  const handleOptionChange = (e) => {
-    const option = e.target.value;
+  const handleOptionChange = (option) => {
     setSelectedOption(option);
     onOptionChange(option);
   };
@@ -17,24 +16,46 @@ const Topology = ({ onOptionChange, onUserCountChange }) => {
     onUserCountChange(count);
   };
 
+  const optionStyle = {
+    display: 'inline-block',
+    width: '100px',
+    height: '100px',
+    margin: '10px',
+    border: '2px solid #ddd',
+    borderRadius: '10px',
+    textAlign: 'center',
+    lineHeight: '100px',
+    cursor: 'pointer',
+    background: selectedOption === 'Line' ? '#f0f0f0' : 'transparent',
+  };
+
   return (
     <div className='centered'>
-      <label htmlFor="dropdown">Choose an option:</label>
-      <select id="dropdown" value={selectedOption} onChange={handleOptionChange} >
-        <option value="Line">Line</option>
-        <option value="Ring">Ring</option>
-        <option value="Star">Star</option>
-        <option value="Mesh">Mesh</option>
-        <option value="Hybrid">Hybrid</option>
-      </select>
-      <br />
-      <label htmlFor="userCount">Enter the number of users:</label>
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+        <div style={{ ...optionStyle, background: selectedOption === 'Line' ? '#f0f0f0' : 'transparent' }} onClick={() => handleOptionChange('Line')}>
+          <FaNetworkWired />
+        </div>
+        <div style={{ ...optionStyle, background: selectedOption === 'Ring' ? '#f0f0f0' : 'transparent' }} onClick={() => handleOptionChange('Ring')}>
+          <FaRing />
+        </div>
+        <div style={{ ...optionStyle, background: selectedOption === 'Star' ? '#f0f0f0' : 'transparent' }} onClick={() => handleOptionChange('Star')}>
+          <FaStar />
+        </div>
+        <div style={{ ...optionStyle, background: selectedOption === 'Mesh' ? '#f0f0f0' : 'transparent' }} onClick={() => handleOptionChange('Mesh')}>
+          <FaProjectDiagram />
+        </div>
+        <div style={{ ...optionStyle, background: selectedOption === 'Hybrid' ? '#f0f0f0' : 'transparent' }} onClick={() => handleOptionChange('Hybrid')}>
+          <FaLifeRing />
+        </div>
+      </div>
+
+      <label htmlFor="userCount">Enter the number of users:  </label>
       <input
         type="number"
         id="userCount"
         value={userCount}
         onChange={handleUserCountChange}
-        style={{ width: '100px' }}
+        style={{ width: '100px', marginBottom: '10px' }}
       />
       <p>
         Selected topology: {selectedOption}<br></br> Number of users: {userCount || 'N/A'}
@@ -42,4 +63,5 @@ const Topology = ({ onOptionChange, onUserCountChange }) => {
     </div>
   );
 };
+
 export default Topology;

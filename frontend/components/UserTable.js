@@ -63,8 +63,8 @@ const UserTable = ({ userCount }) => {
   };
 
   return (
-    <div className='centeredTable'>
-      <table>
+    <div className='centered'>
+      <table className='centeredTable'>
         <thead>
           <tr>
             <th>User Number</th>
@@ -95,6 +95,9 @@ const UserTable = ({ userCount }) => {
         </tbody>
       </table>
       {submissionMessage && <p>{submissionMessage}</p>}
+      <br />
+      <br />
+      <br />
       <button onClick={handleSubmit}>Submit</button>
     </div>
   );
