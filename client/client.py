@@ -23,6 +23,8 @@ app.add_middleware(
     allow_headers=["*"],  # This allows all headers
 )
 
+graph = {}
+
 @app.get('/')
 def read_root():
     return {"Hello": "World"}
@@ -78,10 +80,12 @@ def forward(model_path:str):
     # send the model to the next node
     global graph
     global external_ip
+    print(f'graph: {graph}, external_ip: {external_ip}')
     for user_number, user_node in graph.items():
         if user_node['ip'] == external_ip:
             edges = user_node['edges']
             break
+
     print(edges)
 
     file = open(model_path, 'rb')

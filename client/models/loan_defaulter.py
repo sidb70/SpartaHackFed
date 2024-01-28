@@ -41,8 +41,8 @@ class LoanDefaulterModel(Model):
         # # drop columns with more than 50% missing values
         # data = data.dropna(thresh=0.5*len(data), axis=1)
 
-        # convert categorical columns to numerical
-        data = pd.get_dummies(data)
+        # delete categorical columns
+        data = data.select_dtypes(exclude=['object'])
 
         # convert all columns to float
         data = data.astype(float)
@@ -51,6 +51,7 @@ class LoanDefaulterModel(Model):
 
 
     def train(self):
+        print(f"data shape {self.data.shape[1]}")
 
         mergeddf_sample = self.process_data(self.data)
 
@@ -66,13 +67,14 @@ class LoanDefaulterModel(Model):
         X = mergeddf_sample.drop(['TARGET'],axis=1)
         X = num_pipeline.fit_transform(X)
 
+        print(f"X shape {X.shape[1]}")
+
         y = mergeddf_sample['TARGET']
 
         # if pth is provided, load weights from pth file bytes
         if self.pth_file_bytes is not None:
             model = torch.load(self.pth_file_bytes)
         else:
-            print(f"X shape {X.shape[1]}")
             model = torch.nn.Sequential(
                 torch.nn.Linear(X.shape[1], 100),
                 torch.nn.ReLU(),
