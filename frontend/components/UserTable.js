@@ -29,7 +29,7 @@ const UserTable = ({ userCount }) => {
 
   const handleSubmit = async () => {
 
-    const serverUrl = 'http://35.21.184.220:8000/api/network_config';
+    const serverUrl = 'http://localhost:8000/api/network_config';
 
     console.log('Submitting data:', tableData);
     const userData = tableData.map(({ userNumber, ip, port }) => ({
