@@ -26,7 +26,7 @@ const Topology = ({ onOptionChange, onUserCountChange }) => {
     textAlign: 'center',
     lineHeight: '100px',
     cursor: 'pointer',
-    background: selectedOption === 'Line' ? '#f0f0f0' : 'transparent',
+    background: selectedOption === 'Ring' ? '#f0f0f0' : 'transparent',
   };
 
   const textStyle = {
@@ -53,17 +53,9 @@ const Topology = ({ onOptionChange, onUserCountChange }) => {
           <span style={textStyle}>  Hybrid</span> {/* Text description for Hybrid */}
         </div>
       </div>
-
-      <label htmlFor="userCount">Enter the number of users:  </label>
-      <input
-        type="number"
-        id="userCount"
-        value={userCount}
-        onChange={handleUserCountChange}
-        style={{ width: '100px', marginBottom: '10px' }}
-      />
+      
       <p>
-        Selected topology: {selectedOption}<br></br> Number of users: {userCount || 'N/A'}
+        Selected topology: {selectedOption}
       </p>
     </div>
   );

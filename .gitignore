@@ -5,6 +5,8 @@
 node_modules/
 *.pth
 node_modules
+**/annotations/*.xml
+**/images/*.png
 
 model.pth
 

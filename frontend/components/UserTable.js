@@ -1,128 +1,78 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const UserTable = ({ userCount }) => {
-  const [tableData, setTableData] = useState([]);
-  const [submissionMessage, setSubmissionMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+function UserTable() {
+  const [graphData, setGraphData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
 
-  useEffect(() => {
-    if (userCount < 0) {
-      setErrorMessage('Number of users in network must be positive');
-      return;
-    }
-
-    if (userCount > 1000) {
-      setErrorMessage('Network is too large');
-      return;
-    }
-
-    setErrorMessage(''); // Clear any existing error messages
-    // Initialize the tableData when userCount is valid
-    setTableData(
-      Array.from({ length: userCount }, (_, index) => ({
-        userNumber: index + 1,
-        ip: '',
-        port: '',
-      }))
-    );
-  }, [userCount]);
-
-
-  useEffect(() => {
-    // Initialize the tableData when userCount changes
-    setTableData(
-      Array.from({ length: userCount }, (_, index) => ({
-        userNumber: index + 1,
-        ip: '',
-        port: '',
-      }))
-    );
-  }, [userCount]);
-
-  const handleEdit = (rowIndex, columnName, value) => {
-    setTableData((prevData) =>
-      prevData.map((row, index) =>
-        index === rowIndex ? { ...row, [columnName]: value } : row
-      )
-    );
-  };
-
-  const handleSubmit = async () => {
-
-    const my_ip = (await axios.get('https://ifconfig.me/ip')).data.trim()
-    const serverUrl = `http://${my_ip}:8000/api/network_config`;
-
-    console.log('Submitting data:', tableData);
-    const userData = tableData.map(({ userNumber, ip, port }) => ({
-      userNumber,
-      ip,
-      port,
-    }));
-
+  const fetchUsers = async () => {
     try {
-      // Make the API request
-      const response = await axios.post(serverUrl, userData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      console.log('Response from server:', response.data);
+      const my_ip = '35.21.231.182';
+      const serverUrl = `http://${my_ip}:8000`;
+      const response = await axios.get(`${serverUrl}/api/get_graph`);
+      console.log(response.data.Graph); // [{userNumber: 1, ip: "35.21.231.182", port: 8001}]
+      setGraphData(response.data.Graph);
+      setLoading(false);
     } catch (error) {
-      console.error('Error submitting data:', error.message);
-    } finally {
-      // Set the submission message to indicate the process has been initiated
-      setSubmissionMessage('Decentralized learning process has been initiated. P2P network is now established.');
+      setErrorMessage('An error occurred while fetching user data.');
+      setLoading(false);
     }
   };
 
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const startTraining = async () => {
+    try {
+
+      const my_ip = '35.21.231.182';
+      const serverUrl = `http://${my_ip}:8000`;
+      const response = await axios.post(`${serverUrl}/api/network_config`);
+      console.log(response.data); // [{userNumber: 1, ip: "35.21.231.182", port: 8001}]
+      //setGraphData(response.data);
+      setLoading(false);
+    } catch (error) {
+      setErrorMessage('An error occurred while fetching user data.');
+      setLoading(false);
+    }
+  };
   return (
     <div className='centered'>
-      {errorMessage ? (
+      {loading ? (
+        <p>Loading graph data...</p>
+      ) : errorMessage ? (
         <p style={{ color: 'red' }}>{errorMessage}</p>
+      ) : graphData.length === 0 ? (
+        <p>0 users</p>
       ) : (
         <>
-          {/* Render table and other elements only when there is no error */}
-      <table className='centeredTable'>
-        <thead>
-          <tr>
-            <th>User Number</th>
-            <th>IP</th>
-            <th>Port</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tableData.map((row, rowIndex) => (
-            <tr key={rowIndex}>
-              <td>{row.userNumber}</td>
-              <td>
-                <input
-                  type="text"
-                  value={row.ip}
-                  onChange={(e) => handleEdit(rowIndex, 'ip', e.target.value)}
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  value={row.port}
-                  onChange={(e) => handleEdit(rowIndex, 'port', e.target.value)}
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <br />
-      {submissionMessage && <p>{submissionMessage}</p>}
-      <br />
-      <br />
-      <button onClick={handleSubmit}>Submit</button>
-      </>
+          <table className='centeredTable'>
+            <thead>
+              <tr>
+                <th>User IP</th>
+                <th>User Port</th>
+              </tr>
+            </thead>
+            <tbody>
+              {graphData.map((user, index) => (
+                <tr key={index}>
+                  <td>{user.ip}</td>
+                  <td>{user.port}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+        </>
+
       )}
+      <button onClick={fetchUsers}>Refresh Users</button>
+      <button onClick={startTraining}>Start Training</button>
     </div>
   );
-};
+}
 
 export default UserTable;
