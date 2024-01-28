@@ -66,7 +66,10 @@ async def recieve_model(background_tasks: BackgroundTasks, file:UploadFile=None)
     new_model = model.train()
     torch.save(new_model, 'model.pth')
 
-    background_tasks.add_task(forward, 'model.pth')
+    if (background_tasks):
+        background_tasks.add_task(forward, 'model.pth')
+    else:
+        forward('model.pth')
 
     processing = False
     return {"Recieved": "Model"}
