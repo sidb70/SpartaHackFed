@@ -28,15 +28,14 @@ def get_network_config(user_data: List[dict]):
     
     # convert graph to json
     graph_dict = graph_to_json(graph)
-    # send graph_json to all users ip:port
-
-    headers = {'Content-type': 'application/json'}
     graph_json = json.dumps(graph_dict)
-    print(graph_json)
+    
+    headers = {'Content-type': 'application/json'}
+    
     for user_number, user_node in graph.nodes.items():
         requests.post(f"http://{user_node.ip}:{user_node.port}/api/receive_graph", 
                       data=graph_json, headers=headers)
-    return graph_json
+    return {"Recieved": "Graph"}
 
 def graph_to_json(graph: UserGraph):
     json = {}
