@@ -46,7 +46,11 @@ def create_graph(data, topology: Topology = Topology.LINE):
         for i in range(1, len(data)):
             graph.add_edge(data[i-1]['userNumber'], data[i]['userNumber'], directed=True)
         graph.add_edge( data[-1]['userNumber'],data[0]['userNumber'], directed=True)
-    #elif topology == Topology.MESH:
+    elif topology == Topology.MESH:
+        for i in range(len(data)):
+            for j in range(len(data)):
+                if i != j:
+                    graph.add_edge(data[i]['userNumber'], data[j]['userNumber'], directed=False)
     return graph
 
 def visualize_graph(G):
