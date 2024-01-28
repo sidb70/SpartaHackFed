@@ -7,7 +7,7 @@ __pycache__/
 *.DS_Store
 # C extensions
 *.so
-
+.next/
 # Distribution / packaging
 .Python
 build/
