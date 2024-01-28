@@ -30,7 +30,7 @@ function UserTable() {
       const serverUrl = `http://${my_ip}:8000`;
       const response = await axios.post(`${serverUrl}/api/network_config`);
       console.log(response.data); // [{userNumber: 1, ip: "35.21.231.182", port: 8001}]
-      setGraphData(response.data);
+      //setGraphData(response.data);
       setLoading(false);
     } catch (error) {
       setErrorMessage('An error occurred while fetching user data.');
