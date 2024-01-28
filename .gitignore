@@ -1,3 +1,6 @@
+**/annotations/*
+**/images/*
+
 *.csv
 node_modules/
 *.pth

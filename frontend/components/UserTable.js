@@ -20,12 +20,14 @@ function UserTable() {
     }
   };
 
+
   useEffect(() => {
     fetchUsers();
   }, []);
 
   const startTraining = async () => {
     try {
+
       const my_ip = '35.21.231.182';
       const serverUrl = `http://${my_ip}:8000`;
       const response = await axios.post(`${serverUrl}/api/network_config`);
@@ -66,6 +68,7 @@ function UserTable() {
           <button onClick={fetchUsers}>Refresh Users</button>
           <button onClick={startTraining}>Start Training</button>
         </>
+
       )}
     </div>
   );
