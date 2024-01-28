@@ -6,6 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from util.graph import create_graph,  UserGraph, Topology, UserNode
 import requests
 import json
+import asyncio 
+import aiohttp
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -19,8 +22,17 @@ app.add_middleware(
 def read_root():
     return {"Hello": "World"}
 
+
+async def send_graph_async(user_number, user_node, graph_json, headers):
+    url = f"http://{user_node.ip}:{user_node.port}/api/receive_graph"
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, data=graph_json, headers=headers) as response:
+            # Assuming you want to print the response status code
+            print(f"Response from {user_number}: {response.status}")
+
+
 @app.post("/api/network_config")
-def get_network_config(user_data: List[dict]):
+async def get_network_config(user_data: List[dict]):
     # user_data will be a list of dictionaries containing userNumber, ip, and port
     #print(user_data)
     # Create a graph
@@ -34,11 +46,21 @@ def get_network_config(user_data: List[dict]):
 
     print(f'Graph: {graph_dict}')
     
-    for user_number, user_node in graph.nodes.items():
-        print(f"{user_number}, http://{user_node.ip}:{user_node.port}/api/receive_graph")
+    # for user_number, user_node in graph.nodes.items():
+    #     print(f"{user_number}, http://{user_node.ip}:{user_node.port}/api/receive_graph")
 
-        requests.post(f"http://{user_node.ip}:{user_node.port}/api/receive_graph", 
-                      data=graph_json, headers=headers)
+    #     requests.post(f"http://{user_node.ip}:{user_node.port}/api/receive_graph", 
+    #                   data=graph_json, headers=headers)
+
+    tasks = []
+
+    for user_number, user_node in graph.nodes.items():
+        tasks.append(send_graph_async(user_number, user_node, graph_json, headers))
+
+    await asyncio.gather(*tasks)
+
+    # await asyncio.gather(*[requests.post(f"http://{user_node.ip}:{user_node.port}/api/receive_graph",
+    #     data=graph_json, headers=headers) for user_number, user_node in graph.nodes.items()])
 
     return {"Recieved": "Graph"}
 
