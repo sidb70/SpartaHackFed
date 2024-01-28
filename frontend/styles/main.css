@@ -12,8 +12,18 @@ body {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
+<<<<<<< Updated upstream
+=======
+h1, h2, label, strong {
+    font-family: 'Orbitron-Regular', 'Helvetica', sans-serif;
+    color: #ec5c3d;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+>>>>>>> Stashed changes
 h1 {
     font-family: 'Orbitron-Regular', 'Helvetica', sans-serif;
     color: #f27649;
@@ -21,7 +31,39 @@ h1 {
     text-align: center;
 }
 
+<<<<<<< Updated upstream
 form {
+=======
+input, button {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+input {
+    background-color: #2a2828;
+    border: 1px solid #3d3838;
+    color: #fff;
+    box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.2);
+}
+
+button {
+    background-color: #ec5c3d;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 400px 0 rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #d97565;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
+}
+
+.results, .userTable, .elementAbove {
+>>>>>>> Stashed changes
     margin-top: 20px;
 }
 
