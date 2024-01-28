@@ -1,7 +1,7 @@
 from typing import Tuple, Dict, List
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from util.graph import create_graph, visualize_graph, UserGraph, Topology, UserNode
+from util.graph import create_graph,  UserGraph, Topology, UserNode
 import requests
 import json
 app = FastAPI()
@@ -41,8 +41,6 @@ def get_network_config(user_data: List[dict]):
         requests.post(f"http://{user_node.ip}:{user_node.port}/api/receive", 
                       data=graph_json, headers=headers)
     return graph_json
-
-
 
 def graph_to_json(graph: UserGraph):
     json = {}

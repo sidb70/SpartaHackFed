@@ -14,6 +14,7 @@ app.add_middleware(
 
 @app.post("/api/receive")
 def read_root(graph_data: Dict[str, dict]):
+    global graph
     if not graph:
         graph = graph_data
     train()
