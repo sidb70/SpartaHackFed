@@ -25,7 +25,7 @@ def get_loan_defaulter_data(node_hash: int):
         all_data = mergeddf.sample(100000)
         # save mergeddf_sample to csv
         all_data.to_csv('data/mergeddf_sample.csv', index=False)
-    
+
     return all_data.sample(1000, random_state=node_hash)
 
 
@@ -54,6 +54,8 @@ class LoanDefaulterModel(Model):
 
         mergeddf_sample = self.process_data(self.data)
 
+        print(f"Merged shape {mergeddf_sample.shape[1]}")
+
         # pipeline to drop na, impute missing values, filter by VIF, and normalize
         num_pipeline = Pipeline([
             ('imputer', SimpleImputer(strategy="median")),
@@ -70,6 +72,7 @@ class LoanDefaulterModel(Model):
         if self.pth_file_bytes is not None:
             model = torch.load(self.pth_file_bytes)
         else:
+            print(f"X shape {X.shape[1]}")
             model = torch.nn.Sequential(
                 torch.nn.Linear(X.shape[1], 100),
                 torch.nn.ReLU(),

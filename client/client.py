@@ -7,6 +7,7 @@ from models.loan_defaulter import LoanDefaulterModel, get_loan_defaulter_data
 import json
 import time
 import asyncio
+import io
 
 # Get external IP address using a third-party service (e.g., ifconfig.me)
 external_ip = requests.get('https://ifconfig.me/ip').text.strip()
@@ -42,7 +43,6 @@ async def receive_graph(graph_data: dict):
     return {"Recieved": "Graph"}
 
 
-
 processing = False
 
 @app.post("/api/recieve_model")
@@ -58,11 +58,13 @@ async def recieve_model(file:UploadFile=None):
     file_bytes = None
     if (file):
         file_bytes = await file.read()
+        file = io.BytesIO(file_bytes)
+    
 
     print(type(file_bytes))
 
     node_hash = 1
-    model = LoanDefaulterModel(get_loan_defaulter_data(node_hash), file_bytes)
+    model = LoanDefaulterModel(get_loan_defaulter_data(node_hash), file)
     new_model = model.train()
     torch.save(new_model, 'model.pth')
 
