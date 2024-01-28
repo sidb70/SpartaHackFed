@@ -4,34 +4,23 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 import torch
 from .model import Model
-import os
-import sys
 
 import matplotlib.pyplot as plt
 
 
 losses = []
-
+plt.ion()
+fig = plt.figure()
+ax = fig.add_subplot(111)
+line, = ax.plot([0], [0], 'r-')
+ax.set_xlabel('Epoch')
+ax.set_ylabel('Loss')
+        
 
 def get_loan_defaulter_data(node_hash: int):
-    try:
-        all_data = pd.read_csv('data/mergeddf_sample.csv')
-    except FileNotFoundError:
-        # run the commands
-        # pip install kaggle unzip
-        # kaggle datasets download gauravduttakiit/loan-defaulter/
-        # unzip loan-defaulter
+    all_data = pd.read_csv('data/loan_data.csv')
 
-        application_data = pd.read_csv('data/application_data.csv')
-        previous_application = pd.read_csv('data/previous_application.csv')
-        # columns_description = pd.read_csv(r'columns_description.csv',skiprows=1)
-
-        mergeddf =  pd.merge(application_data,previous_application,on='SK_ID_CURR')
-        all_data = mergeddf.sample(100000)
-        # save mergeddf_sample to csv
-        all_data.to_csv('data/mergeddf_sample.csv', index=False)
-
-    return all_data.sample(20000, random_state=node_hash)
+    return all_data.sample(10000, random_state=node_hash)
 
 
 class LoanDefaulterModel(Model):
@@ -59,8 +48,6 @@ class LoanDefaulterModel(Model):
         print(f"data shape {self.data.shape[1]}")
 
         mergeddf_sample = self.process_data(self.data)
-
-        mergeddf_sample = mergeddf_sample.sample(1000)
 
         print(f"Merged shape {mergeddf_sample.shape[1]}")
 
@@ -99,9 +86,9 @@ class LoanDefaulterModel(Model):
         X_tensor = torch.from_numpy(X).float()
         y_tensor = torch.squeeze(torch.from_numpy(y.to_numpy()).float())
 
-        # train model, in batches of 10
+        # train 1 epoch, in batches of 10
         epochs = 10
-        batch_size = 10
+        batch_size = 100
         for epoch in range(epochs):
             for i in range(0, len(X_tensor), batch_size):
                 X_batch = X_tensor[i:i+batch_size]
@@ -111,13 +98,19 @@ class LoanDefaulterModel(Model):
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
-            print('Epoch: {}, Loss: {}'.format(epoch, loss.item()))
+            
+            losses.append(loss.item())
 
-        losses.append(loss.item())
+            ax.set_xlim(0, len(losses))
+            ax.set_ylim(0, max(losses))
+            line.set_xdata(range(len(losses)))
+            line.set_ydata(losses)
+            fig.canvas.draw()
+            fig.canvas.flush_events()
 
-        plt.plot(losses)
+            print('Epoch {}, Loss: {}'.format(epoch, loss.item()))
 
-        plt.show(block=False)
+
 
         # return model weights
         return model
