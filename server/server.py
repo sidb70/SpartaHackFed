@@ -18,7 +18,7 @@ app.add_middleware(
     allow_headers=["*"],  # This allows all headers
 )
 graph = {}
-graph_list = []
+user_topology = None
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
@@ -33,7 +33,8 @@ async def send_request_async(url, data, headers):
 @app.get("/api/get_graph")
 async def get_graph():
     global graph
-    global graph_list
+    global user_topology
+    graph_list=[]
     if not graph:
         return {"Graph": []}
     if type(graph) != UserGraph:
@@ -46,7 +47,7 @@ async def get_graph():
                 "ip": ip,
                 "port": port
             })
-        graph = create_graph(graph_list, topology=Topology.RING)
+        user_topology = create_graph(graph_list, topology=Topology.RING)
 
 
     return {"Graph": graph_list}
@@ -56,9 +57,9 @@ async def get_graph():
 async def add_node(user_data: dict):
     # add the node to the graph
     global graph
-    global external_ip
     graph[user_data['ip']] = user_data['port']
     print(graph)
+    
 
 
 @app.post("/api/network_config")
@@ -66,10 +67,10 @@ async def get_network_config():
     # user_data will be a list of dictionaries containing userNumber, ip, and port
     #print(user_data)
     # Create a graph
-    global graph
+    global user_topology
     
     # convert graph to json
-    graph_dict = graph_to_json(graph)
+    graph_dict = graph_to_json(user_topology)
     graph_json = json.dumps(graph_dict)
     
     headers = {'Content-type': 'application/json'}
@@ -83,7 +84,7 @@ async def get_network_config():
     #                   data=graph_json, headers=headers)
 
     tasks = []
-    for user_number, user_node in graph.nodes.items():
+    for user_number, user_node in user_topology.nodes.items():
         tasks.append(send_request_async(f"http://{user_node.ip}:{user_node.port}/api/receive_graph", graph_json, headers))
     await asyncio.gather(*tasks)
 
@@ -92,9 +93,9 @@ async def get_network_config():
 
     return {"Recieved": "Graph"}
 
-def graph_to_json(graph: UserGraph):
+def graph_to_json(user_topology: UserGraph):
     json = {}
-    for user_number, user_node in graph.nodes.items():
+    for user_number, user_node in user_topology.nodes.items():
         json[user_number] = {
             "ip": user_node.ip,
             "port": user_node.port,

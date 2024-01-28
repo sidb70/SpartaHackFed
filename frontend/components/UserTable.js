@@ -8,7 +8,7 @@ function UserTable() {
 
   const fetchUsers = async () => {
     try {
-      const my_ip = '35.23.186.81';
+      const my_ip = '35.21.231.182';
       const serverUrl = `http://${my_ip}:8000`;
       const response = await axios.get(`${serverUrl}/api/get_graph`);
       console.log(response.data.Graph); // [{userNumber: 1, ip: "35.21.231.182", port: 8001}]
