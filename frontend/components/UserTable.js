@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import dotenv from 'dotenv'
 
-const apiUrl = 'http://35.21.231.182:8000/api/network_config';
 
 const UserTable = ({ userCount }) => {
   const [tableData, setTableData] = useState([]);
   const [submissionMessage, setSubmissionMessage] = useState('');
+
 
   useEffect(() => {
     // Initialize the tableData when userCount changes
@@ -27,6 +28,10 @@ const UserTable = ({ userCount }) => {
   };
 
   const handleSubmit = async () => {
+
+    const serverUrl = 'http://35.21.184.220:8000/api/network_config';
+
+    console.log('Submitting data:', tableData);
     const userData = tableData.map(({ userNumber, ip, port }) => ({
       userNumber,
       ip,
@@ -36,17 +41,16 @@ const UserTable = ({ userCount }) => {
     try {
     
       // Clear the contents of the cells without deleting the rows
-      setTableData((prevData) =>
-        prevData.map((row) => ({
-          ...row,
-          ip: '',
-          port: '',
-        }))
-      );
+      // setTableData((prevData) =>
+      //   prevData.map((row) => ({
+      //     ...row,
+      //     ip: '',
+      //     port: '',
+      //   }))
+      // );
       
-
       // Make the API request
-      const response = await axios.post(apiUrl, userData, {
+      const response = await axios.post(serverUrl, userData, {
         headers: {
           'Content-Type': 'application/json',
         },

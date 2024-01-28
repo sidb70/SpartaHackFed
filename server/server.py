@@ -31,10 +31,14 @@ def get_network_config(user_data: List[dict]):
     graph_json = json.dumps(graph_dict)
     
     headers = {'Content-type': 'application/json'}
+
+    print(f'Graph: {graph_dict}')
     
     for user_number, user_node in graph.nodes.items():
+        print(f"{user_number}, http://{user_node.ip}:{user_node.port}/api/receive_graph")
         requests.post(f"http://{user_node.ip}:{user_node.port}/api/receive_graph", 
                       data=graph_json, headers=headers)
+
     return {"Recieved": "Graph"}
 
 def graph_to_json(graph: UserGraph):
