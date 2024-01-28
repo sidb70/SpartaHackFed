@@ -1,4 +1,3 @@
-// components/UserTable.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -6,6 +5,7 @@ const apiUrl = 'http://35.21.231.182:8000/api/network_config';
 
 const UserTable = ({ userCount }) => {
   const [tableData, setTableData] = useState([]);
+  const [submissionMessage, setSubmissionMessage] = useState('');
 
   useEffect(() => {
     // Initialize the tableData when userCount changes
@@ -32,17 +32,33 @@ const UserTable = ({ userCount }) => {
       ip,
       port,
     }));
-  
+
     try {
+    
+      // Clear the contents of the cells without deleting the rows
+      setTableData((prevData) =>
+        prevData.map((row) => ({
+          ...row,
+          ip: '',
+          port: '',
+        }))
+      );
+      
+
+      // Make the API request
       const response = await axios.post(apiUrl, userData, {
         headers: {
           'Content-Type': 'application/json',
         },
       });
-  
+
       console.log('Response from server:', response.data);
     } catch (error) {
       console.error('Error submitting data:', error.message);
+    } finally {
+      // Set the submission message to indicate the process has been initiated
+      setSubmissionMessage('Decentralized learning process has been initiated. P2P network is now established.');
+
     }
   };
 
@@ -78,6 +94,7 @@ const UserTable = ({ userCount }) => {
           ))}
         </tbody>
       </table>
+      {submissionMessage && <p>{submissionMessage}</p>}
       <button onClick={handleSubmit}>Submit</button>
     </div>
   );
