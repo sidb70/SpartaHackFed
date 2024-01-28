@@ -25,6 +25,9 @@ import subprocess
 # Get external IP address using a third-party service (e.g., ifconfig.me)
 external_ip = requests.get('https://ifconfig.me/ip').text.strip()
 
+server_ip = ''
+
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
