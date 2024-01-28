@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaNetworkWired, FaRing, FaStar, FaProjectDiagram, FaLifeRing } from 'react-icons/fa';
 
 const Topology = ({ onOptionChange, onUserCountChange }) => {
-  const [selectedOption, setSelectedOption] = useState('Line');
+  const [selectedOption, setSelectedOption] = useState('Ring');
   const [userCount, setUserCount] = useState('');
 
   const handleOptionChange = (option) => {
