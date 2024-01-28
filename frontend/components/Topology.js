@@ -3,17 +3,9 @@ import { FaNetworkWired, FaRing, FaStar, FaProjectDiagram, FaLifeRing } from 're
 
 const Topology = ({ onOptionChange, onUserCountChange }) => {
   const [selectedOption, setSelectedOption] = useState('Ring');
-  const [userCount, setUserCount] = useState('');
-
   const handleOptionChange = (option) => {
     setSelectedOption(option);
     onOptionChange(option);
-  };
-
-  const handleUserCountChange = (e) => {
-    const count = e.target.value;
-    setUserCount(count);
-    onUserCountChange(count);
   };
 
   const optionStyle = {

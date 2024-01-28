@@ -7,8 +7,8 @@ from models.loan_defaulter import LoanDefaulterModel, get_loan_defaulter_data
 import io
 
 # Get external IP address using a third-party service (e.g., ifconfig.me)
-external_ip = requests.get('https://ifconfig.me/ip').text.strip()
-print(f"External IP Address: {external_ip}")
+my_public_ip = requests.get('https://ifconfig.me/ip').text.strip()
+print(f"External IP Address: {my_public_ip}")
 
 app = FastAPI()
 
@@ -20,7 +20,11 @@ app.add_middleware(
     allow_headers=["*"],  # This allows all headers
 )
 
-requests.post(f"http://{external_ip}:8000/api/add_node", json={"ip": external_ip, "port": 8001})
+daniel_ip = "35.21.162.32"
+sid_ip = "35.21.231.182"
+server_ip = sid_ip
+
+requests.post(f"http://{server_ip}:8000/api/add_node", json={"ip": my_public_ip, "port": 8001})
 
 graph = {}
 
@@ -33,10 +37,10 @@ async def receive_graph(graph_data: dict):
     
     # load the graph
     global graph
-    global external_ip
+    global my_public_ip
     graph = {int(k): v for k, v in graph_data.items()}
     print(graph)
-    if graph[1]['ip'] == external_ip:
+    if graph[1]['ip'] == my_public_ip:
         print("I am the first node")
         await recieve_model(None)
     else:
@@ -63,7 +67,7 @@ async def recieve_model(background_tasks: BackgroundTasks, file:UploadFile=None)
     
     print(type(file_bytes))
 
-    node_hash = int(external_ip.split('.')[-1])
+    node_hash = int(my_public_ip.split('.')[-1])
     model = LoanDefaulterModel(get_loan_defaulter_data(node_hash), file)
     new_model = model.train()
     torch.save(new_model, 'model.pth')
@@ -82,10 +86,10 @@ async def recieve_model(background_tasks: BackgroundTasks, file:UploadFile=None)
 def forward(model_path:str):
     # send the model to the next node
     global graph
-    global external_ip
-    print(f'graph: {graph}, external_ip: {external_ip}')
+    global my_public_ip
+    print(f'graph: {graph}, external_ip: {my_public_ip}')
     for user_number, user_node in graph.items():
-        if user_node['ip'] == external_ip:
+        if user_node['ip'] == my_public_ip:
             edges = user_node['edges']
             break
 
