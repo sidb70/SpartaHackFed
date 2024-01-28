@@ -35,7 +35,7 @@ async def get_network_config(user_data: List[dict]):
     # user_data will be a list of dictionaries containing userNumber, ip, and port
     #print(user_data)
     # Create a graph
-    graph = create_graph(user_data, topology=Topology.LINE)
+    graph = create_graph(user_data, topology=Topology.RING)
     
     # convert graph to json
     graph_dict = graph_to_json(graph)

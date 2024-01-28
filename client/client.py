@@ -61,7 +61,7 @@ async def recieve_model(background_tasks: BackgroundTasks, file:UploadFile=None)
     
     print(type(file_bytes))
 
-    node_hash = 1
+    node_hash = int(external_ip.split('.')[-1])
     model = LoanDefaulterModel(get_loan_defaulter_data(node_hash), file)
     new_model = model.train()
     torch.save(new_model, 'model.pth')

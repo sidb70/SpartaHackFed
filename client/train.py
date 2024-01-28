@@ -12,7 +12,7 @@ if __name__ == '__main__':
     except FileNotFoundError:
         file = None
 
-    node_hash = 1   
+    node_hash = 1
     model = LoanDefaulterModel(get_loan_defaulter_data(node_hash), file)
     result = model.train()
     # model.evaluate(result)

@@ -7,6 +7,11 @@ from .model import Model
 import os
 import sys
 
+import matplotlib.pyplot as plt
+
+
+losses = []
+
 
 def get_loan_defaulter_data(node_hash: int):
     try:
@@ -26,7 +31,7 @@ def get_loan_defaulter_data(node_hash: int):
         # save mergeddf_sample to csv
         all_data.to_csv('data/mergeddf_sample.csv', index=False)
 
-    return all_data.sample(1000, random_state=node_hash)
+    return all_data.sample(20000, random_state=node_hash)
 
 
 class LoanDefaulterModel(Model):
@@ -54,6 +59,8 @@ class LoanDefaulterModel(Model):
         print(f"data shape {self.data.shape[1]}")
 
         mergeddf_sample = self.process_data(self.data)
+
+        mergeddf_sample = mergeddf_sample.sample(1000)
 
         print(f"Merged shape {mergeddf_sample.shape[1]}")
 
@@ -105,6 +112,12 @@ class LoanDefaulterModel(Model):
                 loss.backward()
                 optimizer.step()
             print('Epoch: {}, Loss: {}'.format(epoch, loss.item()))
+
+        losses.append(loss.item())
+
+        plt.plot(losses)
+
+        plt.show(block=False)
 
         # return model weights
         return model
