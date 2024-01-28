@@ -1,4 +1,5 @@
 *.csv
+node_modules/
 *.pth
 node_modules
 
@@ -166,3 +167,4 @@ cython_debug/
 client/loan-defaulter.zip
 *.pth
 client/model.pth
+frontend/node_modules/@next/swc-win32-x64-msvc/next-swc.win32-x64-msvc.node

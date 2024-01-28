@@ -5,6 +5,29 @@ import dotenv from 'dotenv'
 const UserTable = ({ userCount }) => {
   const [tableData, setTableData] = useState([]);
   const [submissionMessage, setSubmissionMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    if (userCount < 0) {
+      setErrorMessage('Number of users in network must be positive');
+      return;
+    }
+
+    if (userCount > 1000) {
+      setErrorMessage('Network is too large');
+      return;
+    }
+
+    setErrorMessage(''); // Clear any existing error messages
+    // Initialize the tableData when userCount is valid
+    setTableData(
+      Array.from({ length: userCount }, (_, index) => ({
+        userNumber: index + 1,
+        ip: '',
+        port: '',
+      }))
+    );
+  }, [userCount]);
 
 
   useEffect(() => {
@@ -66,8 +89,13 @@ const UserTable = ({ userCount }) => {
   };
 
   return (
-    <div className='centeredTable'>
-      <table>
+    <div className='centered'>
+      {errorMessage ? (
+        <p style={{ color: 'red' }}>{errorMessage}</p>
+      ) : (
+        <>
+          {/* Render table and other elements only when there is no error */}
+      <table className='centeredTable'>
         <thead>
           <tr>
             <th>User Number</th>
@@ -98,7 +126,12 @@ const UserTable = ({ userCount }) => {
         </tbody>
       </table>
       {submissionMessage && <p>{submissionMessage}</p>}
+      <br />
+      <br />
+      <br />
       <button onClick={handleSubmit}>Submit</button>
+      </>
+      )}
     </div>
   );
 };
