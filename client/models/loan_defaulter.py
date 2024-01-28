@@ -109,7 +109,8 @@ class LoanDefaulterModel(Model):
 
             print('Epoch {}, Loss: {}'.format(epoch, loss.item()))
 
-
+            #plt.plot(losses)
+            
 
         # return model weights
         return model

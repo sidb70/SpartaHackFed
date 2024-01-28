@@ -1,7 +1,7 @@
 // pages/index.js
 import React, { useState } from 'react';
 import Topology from '../components/Topology';  // Correct import statement
-import UserTable from '../components/UserTable';
+import GraphTable from '../components/UserTable';
 const Home = () => {
   const [selectedOption, setSelectedOption] = useState('');
   const [userCount, setUserCount] = useState('');
@@ -21,7 +21,7 @@ const Home = () => {
         onOptionChange={handleOptionChange}
         onUserCountChange={handleUserCountChange}
       />
-      <UserTable userCount={userCount} />
+      <GraphTable />
 
     </div>
     

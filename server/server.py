@@ -17,7 +17,8 @@ app.add_middleware(
     allow_methods=["*"],  # This allows all HTTP methods
     allow_headers=["*"],  # This allows all headers
 )
-
+graph = {}
+graph_list = []
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
@@ -29,13 +30,43 @@ async def send_request_async(url, data, headers):
             # Assuming you want to print the response status code
             pass
 
+@app.get("/api/get_graph")
+async def get_graph():
+    global graph
+    global graph_list
+    if not graph:
+        return {"Graph": []}
+    if type(graph) != UserGraph:
+        ips = list(graph.keys())
+        for i in range(len(ips)):
+            ip = ips[i]
+            port = graph[ip]
+            graph_list.append({
+                "userNumber": i+1,
+                "ip": ip,
+                "port": port
+            })
+        graph = create_graph(graph_list, topology=Topology.RING)
+
+
+    return {"Graph": graph_list}
+
+
+@app.post("/api/add_node")
+async def add_node(user_data: dict):
+    # add the node to the graph
+    global graph
+    global external_ip
+    graph[user_data['ip']] = user_data['port']
+    print(graph)
+
 
 @app.post("/api/network_config")
-async def get_network_config(user_data: List[dict]):
+async def get_network_config():
     # user_data will be a list of dictionaries containing userNumber, ip, and port
     #print(user_data)
     # Create a graph
-    graph = create_graph(user_data, topology=Topology.RING)
+    global graph
     
     # convert graph to json
     graph_dict = graph_to_json(graph)
@@ -52,10 +83,8 @@ async def get_network_config(user_data: List[dict]):
     #                   data=graph_json, headers=headers)
 
     tasks = []
-
     for user_number, user_node in graph.nodes.items():
         tasks.append(send_request_async(f"http://{user_node.ip}:{user_node.port}/api/receive_graph", graph_json, headers))
-
     await asyncio.gather(*tasks)
 
     # await asyncio.gather(*[requests.post(f"http://{user_node.ip}:{user_node.port}/api/receive_graph",
