@@ -7,3 +7,4 @@ fastapi>=0.109.0
 requests
 python-multipart
 aiohttp
+matplotlib
