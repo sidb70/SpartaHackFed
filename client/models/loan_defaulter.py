@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
+from sklearn import model_selection
 import torch
 from .model import Model
 
@@ -20,18 +20,35 @@ ax.set_ylim(0, 1)
 ax.legend(['Train Loss', 'Validation Loss'])
         
 
-def get_loan_defaulter_data(node_hash: int):
-    all_data = pd.read_csv('data/loan_data.csv')
-    return all_data.sample(10000, random_state=node_hash)
-
 
 class LoanDefaulterModel(Model):
 
-    def __init__(self, data, pth_file_bytes, *args, **kwargs):
-        self.data = data
-        self.pth_file_bytes = pth_file_bytes
+    def __init__(self, node_hash=1, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
+        self.data = self.get_loan_defaulter_data(node_hash)
+        self.X_train, self.X_valid, self.y_train, self.y_valid = self.train_test_split(self.data)
+        self.model = torch.nn.Sequential(
+                torch.nn.Linear(self.X_train.shape[1], 100),
+                torch.nn.ReLU(),
+                torch.nn.Linear(100, 50),
+                torch.nn.ReLU(),
+                torch.nn.Linear(50, 1),
+                torch.nn.Sigmoid()
+            )
+        
+        try:
+            with open('model_state_dict.pth', 'rb') as f:
+                #file = 'io.BytesIO(f.read())'
+                file = 'model_state_dict.pth'
+        except FileNotFoundError:
+            file = None
+        if file:
+            self.model.load_state_dict(torch.load(file))
+            
+        
+    def get_loan_defaulter_data(node_hash: int):
+        all_data = pd.read_csv('data/loan_data.csv')
+        return all_data.sample(10000, random_state=node_hash)
 
     def process_data(self, data):
         # # drop columns with more than 50% missing values
@@ -44,9 +61,9 @@ class LoanDefaulterModel(Model):
         data = data.astype(float)
 
         return data
-
-
-    def train(self):
+    def set_state_dict_path(self, path):
+        self.state_dict_path = path
+    def train_test_split(self, data):
         print(f"data shape {self.data.shape[1]}")
 
         mergeddf_sample = self.process_data(self.data)
@@ -67,45 +84,33 @@ class LoanDefaulterModel(Model):
 
         y = mergeddf_sample['TARGET']
 
-        X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.2, random_state=42)
-
-        # if pth is provided, load weights from pth file bytes
-        model = torch.nn.Sequential(
-                torch.nn.Linear(X.shape[1], 100),
-                torch.nn.ReLU(),
-                torch.nn.Linear(100, 50),
-                torch.nn.ReLU(),
-                torch.nn.Linear(50, 1),
-                torch.nn.Sigmoid()
-            )
-        if self.pth_file_bytes is not None:
-            
-            model.load_state_dict(state_dict=torch.load(self.pth_file_bytes))
-        
-        # define loss function and optimizer
-        criterion = torch.nn.BCELoss()
-        optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
-
-        # convert data to tensors
+        X_train, X_valid, y_train, y_valid = model_selection.train_test_split(X, y, test_size=0.2, random_state=42)
+    
+            # convert data to tensors
         X_train_tensor = torch.from_numpy(X_train).float()
         y_train_tensor = torch.squeeze(torch.from_numpy(y_train.to_numpy()).float())
 
         X_valid_tensor = torch.from_numpy(X_valid).float()
         y_valid_tensor = torch.squeeze(torch.from_numpy(y_valid.to_numpy()).float())
+        return X_train_tensor, X_valid_tensor, y_train_tensor, y_valid_tensor
+    def train(self):
+        # define loss function and optimizer
+        criterion = torch.nn.BCELoss()
+        optimizer = torch.optim.SGD(self.model.parameters(), lr=0.01)
 
         # train 1 epoch, in batches of 10
         epochs = 20
         batch_size = 200
-        grads = {name: 0 for name, param in model.named_parameters()}
+        grads = {name: 0 for name, param in self.model.named_parameters()}
         for epoch in range(epochs):
-            for i in range(0, len(X_train_tensor), batch_size):
-                X_batch = X_train_tensor[i:i+batch_size]
-                y_batch = y_train_tensor[i:i+batch_size]
-                y_pred = model(X_batch).squeeze()
+            for i in range(0, len(self.X_train), batch_size):
+                X_batch = self.X_train[i:i+batch_size]
+                y_batch = self.y_train[i:i+batch_size]
+                y_pred = self.model(X_batch).squeeze()
                 loss = criterion(y_pred, y_batch)
                 optimizer.zero_grad()
                 loss.backward()
-                for name, param in model.named_parameters():
+                for name, param in self.model.named_parameters():
                     grads[name] += param.grad
                 optimizer.step()
                 #print(grads['0.bias'])
@@ -113,8 +118,8 @@ class LoanDefaulterModel(Model):
 
             # validation loss
             with torch.no_grad():
-                y_pred = model(X_valid_tensor).squeeze()
-                valid_loss = criterion(y_pred, y_valid_tensor)
+                y_pred = self.model(self.X_valid).squeeze()
+                valid_loss = criterion(y_pred, self.y_valid)
                 print('Epoch {}, Validation Loss: {}'.format(epoch, valid_loss.item()))
 
 
@@ -129,9 +134,10 @@ class LoanDefaulterModel(Model):
             fig.canvas.flush_events()
 
             #plt.plot(losses)
-        return model, grads
-
-
+        self.save()
+        return
+    def save(self):
+        torch.save(self.model.state_dict(), 'model_state_dict.pth')
     def evaluate(self, state_dict):
         try:
             all_data = pd.read_csv('data/mergeddf_sample.csv')
