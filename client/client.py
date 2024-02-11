@@ -7,6 +7,8 @@ from models.loan_defaulter import LoanDefaulterModel, get_loan_defaulter_data
 import io
 import uvicorn
 import argparse
+import asyncio
+from aiohttp import ClientSession, FormData
 app = FastAPI()
 
 app.add_middleware(
@@ -19,6 +21,17 @@ app.add_middleware(
 
 graph = {}
 my_public_ip=None
+training=False
+defaulterModel = LoanDefaulterModel()
+
+
+async def send_files_async(url, file, filename, headers):
+    data = FormData()
+    data.add_field('file', file, filename=filename)
+    async with ClientSession() as session:
+        async with session.post(url, data=data, headers=headers) as response:
+            pass # dont care if the request was successful or not. TODO: use UDP
+
 @app.get('/')
 def read_root():
     return {"Hello": "World"}
@@ -31,50 +44,19 @@ async def receive_graph(graph_data: dict):
     global my_public_ip
     graph = {int(k): v for k, v in graph_data.items()}
     print(graph)
-    if graph[1]['ip'] == my_public_ip:
-        print("I am the first node")
-        await recieve_model(None)
-    else:
-        print("I am not the first node")
-    return {"Recieved": "Graph"}
+    train()
 
 
-processing = False
+def train():
+    global training
+    global defaulterModel
+    training = True
 
-@app.post("/api/recieve_model")
-async def recieve_model(background_tasks: BackgroundTasks, file:UploadFile=None):
-    global processing
-    if processing:
-        return {"Processing": "None"}
+    defaulterModel.train()
+    training=False
+    forward()
 
-    processing = True
-
-    print("Recieved model")
-
-    file_bytes = None
-    if (file):
-        file_bytes = await file.read()
-        file = io.BytesIO(file_bytes)
-    
-    print(type(file_bytes))
-
-    node_hash = int(my_public_ip.split('.')[-1])
-    model = LoanDefaulterModel(get_loan_defaulter_data(node_hash), file)
-    new_model = model.train()
-    torch.save(new_model, 'model.pth')
-
-    if (background_tasks):
-        background_tasks.add_task(forward, 'model.pth')
-    else:
-        forward('model.pth')
-
-    processing = False
-    return {"Recieved": "Model"}
-
-
-
-
-def forward(model_path:str):
+def forward(model_path:str = 'model_state_dict.pth'):
     # send the model to the next node
     global graph
     global my_public_ip
@@ -85,19 +67,47 @@ def forward(model_path:str):
             break
 
     print(edges)
-
-    file = open(model_path, 'rb')
-
-
-
+    tasks = []
     with open(model_path, "rb") as file:
         files = {"file": file}
-
         for edge in edges:
             edge_node = graph[edge]
-            print(f"http://{edge_node['ip']}:{edge_node['port']}/api/recieve_model")
+            print('queuing', edge_node['ip'])
+            url = f"http://{edge_node['ip']}:{edge_node['port']}/api/recieve_model"
+            tasks.append(send_files_async(url, files['file'], model_path, {}))
+    asyncio.run(asyncio.wait(tasks))
+@app.post("/api/recieve_model")
+async def recieve_model(background_tasks: BackgroundTasks, file:UploadFile=None):
+    '''    
+        global processing
+        if processing:
+            return {"Processing": "None"}
 
-            requests.post(f"http://{edge_node['ip']}:{edge_node['port']}/api/recieve_model", files=files)
+        processing = True
+
+        print("Recieved model")
+
+        file_bytes = None
+        if (file):
+            file_bytes = await file.read()
+            file = io.BytesIO(file_bytes)
+        
+        print(type(file_bytes))
+
+        node_hash = int(my_public_ip.split('.')[-1])
+        model = LoanDefaulterModel(get_loan_defaulter_data(node_hash), file)
+        new_model = model.train()
+        torch.save(new_model, 'model.pth')
+
+        if (background_tasks):
+            background_tasks.add_task(forward, 'model.pth')
+        else:
+            forward('model.pth')
+
+        processing = False
+        return {"Recieved": "Model"}
+        '''
+
 
 # def aggregate_models(state_dict1, state_dict2) -> dict:
 #     # average the weights of the two models
