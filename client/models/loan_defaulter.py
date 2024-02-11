@@ -70,10 +70,7 @@ class LoanDefaulterModel(Model):
         X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.2, random_state=42)
 
         # if pth is provided, load weights from pth file bytes
-        if self.pth_file_bytes is not None:
-            model = torch.load(self.pth_file_bytes)
-        else:
-            model = torch.nn.Sequential(
+        model = torch.nn.Sequential(
                 torch.nn.Linear(X.shape[1], 100),
                 torch.nn.ReLU(),
                 torch.nn.Linear(100, 50),
@@ -81,10 +78,13 @@ class LoanDefaulterModel(Model):
                 torch.nn.Linear(50, 1),
                 torch.nn.Sigmoid()
             )
-
+        if self.pth_file_bytes is not None:
+            
+            model.load_state_dict(state_dict=torch.load(self.pth_file_bytes))
+        
         # define loss function and optimizer
         criterion = torch.nn.BCELoss()
-        optimizer = torch.optim.Adam(model.parameters(), lr=0.00001)
+        optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
 
         # convert data to tensors
         X_train_tensor = torch.from_numpy(X_train).float()
@@ -96,6 +96,7 @@ class LoanDefaulterModel(Model):
         # train 1 epoch, in batches of 10
         epochs = 20
         batch_size = 200
+        grads = {name: 0 for name, param in model.named_parameters()}
         for epoch in range(epochs):
             for i in range(0, len(X_train_tensor), batch_size):
                 X_batch = X_train_tensor[i:i+batch_size]
@@ -104,9 +105,10 @@ class LoanDefaulterModel(Model):
                 loss = criterion(y_pred, y_batch)
                 optimizer.zero_grad()
                 loss.backward()
+                for name, param in model.named_parameters():
+                    grads[name] += param.grad
                 optimizer.step()
-        
-
+                #print(grads['0.bias'])
             print('Epoch {}, Loss: {}'.format(epoch, loss.item()))
 
             # validation loss
@@ -127,11 +129,7 @@ class LoanDefaulterModel(Model):
             fig.canvas.flush_events()
 
             #plt.plot(losses)
-
-            
-
-        # return model weights
-        return model
+        return model, grads
 
 
     def evaluate(self, state_dict):
