@@ -8,6 +8,7 @@ import requests
 import json
 import asyncio 
 import aiohttp
+import uvicorn
 
 app = FastAPI()
 app.add_middleware(
@@ -102,4 +103,9 @@ def graph_to_json(user_topology: UserGraph):
             "edges": user_node.edges
         }
     return json
-    
+
+if __name__ == "__main__":
+    # Get external IP address using a third-party service (e.g., ifconfig.me)
+    my_public_ip = requests.get('https://ifconfig.me/ip').text.strip()
+    print(f"External IP Address: {my_public_ip}")
+    uvicorn.run(app, host = my_public_ip, port=8000)

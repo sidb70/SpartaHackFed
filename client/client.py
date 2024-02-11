@@ -5,11 +5,8 @@ import torch
 import requests
 from models.loan_defaulter import LoanDefaulterModel, get_loan_defaulter_data
 import io
-
-# Get external IP address using a third-party service (e.g., ifconfig.me)
-my_public_ip = requests.get('https://ifconfig.me/ip').text.strip()
-print(f"External IP Address: {my_public_ip}")
-
+import uvicorn
+import argparse
 app = FastAPI()
 
 app.add_middleware(
@@ -20,14 +17,8 @@ app.add_middleware(
     allow_headers=["*"],  # This allows all headers
 )
 
-daniel_ip = "35.21.162.32"
-sid_ip = "35.21.231.182"
-server_ip = sid_ip
-
-requests.post(f"http://{server_ip}:8000/api/add_node", json={"ip": my_public_ip, "port": 8001})
-
 graph = {}
-
+my_public_ip=None
 @app.get('/')
 def read_root():
     return {"Hello": "World"}
@@ -121,4 +112,20 @@ def forward(model_path:str):
 #         new_state_dict[key] = (state_dict1[key] + state_dict2[key]) / 2.0
 #     return new_state_dict
 
+def run():
+    global my_public_ip
 
+    parser = argparse.ArgumentParser(description="Run the client")
+    parser.add_argument("--server_ip", type=str, help="The IP address of the server")
+    args = parser.parse_args()
+    server_ip = args.server_ip
+
+    # Get external IP address using a third-party service (e.g., ifconfig.me)
+    my_public_ip = requests.get('https://ifconfig.me/ip').text.strip()
+    print(f"External IP Address: {my_public_ip}")
+    requests.post(f"http://{server_ip}:8000/api/add_node", json={"ip": my_public_ip, "port": 8001})
+     
+    uvicorn.run(app, host = my_public_ip, port=8001)
+
+if __name__=='__main__':
+    run()
